@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 class_name AntiCheatPrefs
 
@@ -69,8 +69,8 @@ func encrypt(key,value):
 	}
 	match hashType:
 		AntiType.ENCRYPT:
-			aes.start(AESContext.MODE_ECB_ENCRYPT, pwd.to_utf8())
-			var encry = str(value).to_utf8()
+			aes.start(AESContext.MODE_ECB_ENCRYPT, pwd.to_utf8_buffer())
+			var encry = str(value).to_utf8_buffer()
 			anit_objects[key].count = encry.size()
 			var check = checkSize(encry)
 			var encrypted = aes.update(check)
@@ -87,7 +87,7 @@ func decrypt(key):
 		emit_signal("onValueChanged")
 	match hashType:
 		AntiType.ENCRYPT:
-			aes.start(AESContext.MODE_ECB_DECRYPT, pwd.to_utf8())
+			aes.start(AESContext.MODE_ECB_DECRYPT, pwd.to_utf8_buffer())
 			var decrypted = aes.update(objects[key])
 			var new_decr = decrypted.subarray(0,anit_objects[key].count-1)
 			aes.finish()
@@ -95,7 +95,7 @@ func decrypt(key):
 	match anit_objects[key].type:
 		TYPE_INT:
 			return int(result)
-		TYPE_REAL:
+		TYPE_FLOAT:
 			return float(result)
 		TYPE_STRING:
 			return str(result)
